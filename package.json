@@ -1,0 +1,9 @@
+{
+    "name": "OpenTherm2Mqtt",
+    "version": "0.0.1",
+    "dependencies": {
+        "serialport": "~6.0",
+        "mqtt": "~2.14",
+        "read-yaml": "~1.1"
+    }
+}

@@ -1,0 +1,11 @@
+device: /dev/ttyUSB0
+mqtt:
+    host: mqtt://localhost
+    options:
+        username: ''
+        password: ''
+topics:
+    values: value/otg
+    control: control/otg
+    status: status/otg
+    logs: log/otg

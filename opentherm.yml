@@ -1,0 +1,47 @@
+ids:
+    0: flame_status
+    1: control_setpoint
+    9: remote_override_setpoint
+    14: max_relative_modulation_level
+    16: room_setpoint
+    17: relative_modulation_level
+    18: ch_water_pressure
+    24: room_temperature
+    25: boiler_water_temperature
+    26: dhw_temperature
+    27: outside_temperature
+    28: return_water_temperature
+    56: dhw_setpoint
+    57: max_ch_water_setpoint
+    116: burner_starts
+    117: ch_pump_starts
+    118: dhw_pump_starts
+    119: dhw_burner_starts
+    120: burner_operation_hours
+    121: ch_pump_operation_hours
+    122: dhw_pump_valve_operation_hours
+    123: dhw_burner_operation_hours
+
+types:
+    0: flag8
+    1: f8.8
+    9: f8.8
+    14: f8.8
+    16: f8.8
+    17: f8.8
+    18: f8.8
+    24: f8.8
+    25: f8.8
+    26: f8.8
+    27: f8.8
+    28: f8.8
+    56: f8.8
+    57: f8.8
+    116: u16
+    117: u16
+    118: u16
+    119: u16
+    120: u16
+    121: u16
+    122: u16
+    123: u16
