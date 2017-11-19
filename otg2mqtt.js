@@ -98,66 +98,62 @@ client.on('message', function (topic, message) {
 });
 
 parser.on('data', function (data) {
-	// check for OT packets
-	opentherm_target = data.slice(0, 1); // B, T, A, R, E
-	opentherm_type = data.slice(1, 2); //
-	opentherm_id = parseInt(data.slice(3, 5), 16); //
-	opentherm_payload = data.slice(-4); // last 4 chars
+	var target = data.slice(0, 1); // B, T, A, R, E
+	var type = data.slice(1, 2); // 1, 4, 5, 9, C
+	var id = parseInt(data.slice(3, 5), 16);
+	var payload = data.slice(-4); // last 4 chars
 
 	if (data.length === 9) {
-		console.log(data.toString());
-		if (opentherm_target === "B" || opentherm_target === "T" || opentherm_target === "A" || opentherm_target === "R" || opentherm_target === "E") {
-		//if (opentherm_target === "B" || opentherm_target === "T" || opentherm_target === "A") {
-			if (opentherm_type === "1" || opentherm_type === "4" || opentherm_type === "C" || opentherm_type === "9") {
-				// if (opentherm_type === "1" || opentherm_type === "4") {
-				if (opentherm_id in opentherm.ids) {
-					var topic = config.topics.values + '/' + opentherm.ids[opentherm_id];
-					switch (opentherm.types[opentherm_id]) {
-						case 'flag8':
-							if (opentherm_target !== "A") {
-								topics[topic] = hex2dec(opentherm_payload);
+		if (
+			opentherm.process.targets.indexOf(target) !== -1 &&
+			opentherm.process.types.indexOf(type) !== -1 &&
+            id in opentherm.ids
+		) {
+            var topic = config.topics.values + '/' + opentherm.ids[id];
+            switch (opentherm.types[id]) {
+                case 'flag8':
+                    if (target !== "A") {
+                        topics[topic] = hex2dec(payload);
 
-								if ((topics[topic] & (1 << 1)) > 0) {
-									topics["value/otg/flame_status_ch"] = 1;
-								} else {
-									topics["value/otg/flame_status_ch"] = 0;
-								}
+                        if ((topics[topic] & (1 << 1)) > 0) {
+                            topics[config.topics.values + "/flame_status_ch"] = 1;
+                        } else {
+                            topics[config.topics.values + "/flame_status_ch"] = 0;
+                        }
 
-								if ((topics[topic] & (1 << 2)) > 0) {
-									topics["value/otg/flame_status_dhw"] = 1;
-								} else {
-									topics["value/otg/flame_status_dhw"] = 0;
-								}
+                        if ((topics[topic] & (1 << 2)) > 0) {
+                            topics[config.topics.values + "/flame_status_dhw"] = 1;
+                        } else {
+                            topics[config.topics.values + "/flame_status_dhw"] = 0;
+                        }
 
-								if ((topics[topic] & (1 << 3)) > 0) {
-									topics["value/otg/flame_status_bit"] = 1;
-								} else {
-									topics["value/otg/flame_status_bit"] = 0;
-								}
-							}
-							break;
+                        if ((topics[topic] & (1 << 3)) > 0) {
+                            topics[config.topics.values + "/flame_status_bit"] = 1;
+                        } else {
+                            topics[config.topics.values + "/flame_status_bit"] = 0;
+                        }
+                    }
+                    break;
 
-						case 'f8.8':
-							topics[topic] = (parseInt(opentherm_payload, 16) / 256).toFixed(2);
-							break;
+                case 'f8.8':
+                    topics[topic] = (parseInt(payload, 16) / 256).toFixed(2);
+                    break;
 
-						case 'u16':
-							topics[topic] = parseInt(opentherm_payload, 16);
-							break;
-					}
+                case 'u16':
+                    topics[topic] = parseInt(payload, 16);
+                    break;
+            }
 
-					// check for changes that need to be published
-					for (var value in topics) {
-						if (topics[value] !== previous[value]) {
-							client.publish(value, String(topics[value]), {
-								retain: true,
-                                qos: 1
-							});
-							previous[value] = topics[value];
-						}
-					}
-				}
-			}
+            // check for changes that need to be published
+            for (var queue in topics) {
+                if (topics[queue] !== previous[queue]) {
+                    client.publish(queue, String(topics[queue]), {
+                        retain: true,
+                        qos: 1
+                    });
+                    previous[queue] = topics[queue];
+                }
+            }
 		}
 	}
 });
